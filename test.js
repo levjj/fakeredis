@@ -750,6 +750,10 @@ process.stdout.write('testing fakeredis ...\n\n');
     redis.SORT("set",  "by", "o*->age", "get", "#", "get", "o*->name", test("SORT set by+get, h*->f",  null, result));
     redis.SORT("zset", "by", "o*->age", "get", "#", "get", "o*->name", test("SORT zset by+get, h*->f", null, result));
 
+    redis.ZADD("zset2", 1, 11, 5, 22, 2, 33, 4, 44, 3, 55);
+    redis.SORT("list", "by", "zset2->*", "asc", test("SORT list by zset->* ASC", null, ["11", "33", "55", "44", "22"]));
+    redis.SORT("list", "by", "zset2->*", "desc", test("SORT list by zset->* DESC", null, ["22", "44", "55", "33", "11"]));
+
     redis.SORT("zset", "by", "o*->age", "get", "#", "get", "o*->name", "store", "storekey", test("SORT zset by+get, h*->f, STORE", null, result.length));
     redis.LRANGE("storekey", 0, -1, test("SORT zset by+get, h*->f, STORE / LRANGE", null, result));
 
@@ -984,7 +988,7 @@ function countTests() {
 }
 
 var NUM_TESTS = countTests();
-if (NUM_TESTS !== 279)
+if (NUM_TESTS !== 281)
     throw new Error("Test count is off: " + NUM_TESTS);
 
 process.on('exit', function () {
